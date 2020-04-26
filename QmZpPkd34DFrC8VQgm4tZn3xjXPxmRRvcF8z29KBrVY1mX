@@ -1,0 +1,10 @@
+CREATE OR REPLACE PROCEDURE delete_movie_title_and_adjust_priority(integer, varchar(30)) LANGUAGE plpgsql AS $$
+-- $1 - memberid, $2 - dvdtitle
+DECLARE
+   adjusted_priority int;
+BEGIN
+adjusted_priority = (select customer_priority from rentalqueue where rentalqueue.memberid=$1 and rentalqueue.movie_title=$2);
+delete from rentalqueue where rentalqueue.memberid=$1 and rentalqueue.movie_title=$2;
+update rentalqueue set customer_priority=customer_priority-1 where customer_priority > adjusted_priority;
+END;
+$$;
